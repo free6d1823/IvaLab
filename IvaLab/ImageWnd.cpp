@@ -47,6 +47,8 @@ BEGIN_MESSAGE_MAP(ImageWnd, CWnd)
 	ON_WM_CLOSE()
 	//}}AFX_MSG_MAP
     ON_NOTIFY_EX( TTN_NEEDTEXT, 0, OnNeedText )
+	ON_COMMAND(ID_CAPTURE_RECT, &ImageWnd::OnCaptureRect)
+	ON_UPDATE_COMMAND_UI(ID_CAPTURE_RECT, &ImageWnd::OnUpdateCaptureRect)
 END_MESSAGE_MAP()
 
 
@@ -343,20 +345,20 @@ void ImageWnd::ResizeWindow()
 
 void ImageWnd::OnContextMenu(CWnd* pWnd, CPoint point) 
 {
-	/*
+	
 	CMenu menu;
-	VERIFY(menu.LoadMenu(IDR_MAPPING));
+	VERIFY(menu.LoadMenu(IDR_MENU_CAPTURE));
     int nSel = AfxGetApp()->GetProfileInt("Diff", "map", 1);
 
 	menu.GetMenuItemCount();
 	CMenu* pMenuPopup = menu.GetSubMenu(0);
-    for(int i=0;i<4;i++)
-        pMenuPopup->CheckMenuItem(i, (nSel==i)?MF_CHECKED| MF_BYPOSITION :MF_UNCHECKED|MF_BYPOSITION);
+    //for(int i=0;i<4;i++)
+    //    pMenuPopup->CheckMenuItem(i, (nSel==i)?MF_CHECKED| MF_BYPOSITION :MF_UNCHECKED|MF_BYPOSITION);
 	pMenuPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,
 							   point.x,
 							   point.y,
 							   this);
-	*/
+	
 }
 
 
@@ -455,4 +457,32 @@ void ImageWnd::OnLButtonDown(UINT nFlags, CPoint point)
 	m_rcSelection.SetRectEmpty();
 	
 	CWnd::OnLButtonDown(nFlags, point);
+}
+
+void ImageWnd::OnCaptureRect()
+{
+	CString strFolder = AfxGetApp()->GetProfileString("Capture", "Folder", NULL);
+	if (strFolder.IsEmpty()){
+		AfxMessageBox("Please set File->Capture Folder first", MB_OK);
+		return;
+	}
+
+	String szFile;
+	szFile.Format("%s\img_%dx%d,yuv", strFolder, m_rcSelection.Width(), m_rcSelection.Height());
+	FILE* fp;
+	if ( fp = fopen(szFile, "wb") == NULL ){
+		AfxMessageBox("Failed to create file!", MB_OK);
+		return;
+	}
+
+	//fwrite(
+
+	fclose(fp);
+}
+
+void ImageWnd::OnUpdateCaptureRect(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	pCmdUI->Enable( ! m_rcSelection.IsRectEmpty()); 
+
 }

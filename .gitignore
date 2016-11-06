@@ -1,7 +1,8 @@
 # Object files
-*.o
+*.obj
 *.exe
 *.pch
+*.ilk
 
 # VC files
 *.dep
@@ -9,11 +10,16 @@
 *.pdb
 *.user
 *.manifest
-*.html
+*.htm
 *.aps
 *.cd
 *.ncb
+*.suo
+*.res
 
 #ignore folders
 pict
+bin
+Debug
+Release
 

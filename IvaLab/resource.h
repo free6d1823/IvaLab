@@ -8,6 +8,7 @@
 #define IDR_CONTROLBAR                  130
 #define IDD_MEDIAPROPERTY               132
 #define IDC_MOVE                        133
+#define IDR_MENU_CAPTURE                134
 #define IDC_EDIT1                       1000
 #define IDC_EDIT2                       1001
 #define IDC_EDIT3                       1002
@@ -44,6 +45,8 @@
 #define ID_PROCESS_GRAY                 32802
 #define ID_PROCESS_EDGEDETECTION        32803
 #define ID_PROCESS_DILATION             32804
+#define ID_CAPTURE_RECT                 32805
+#define ID_FILE_CAPTUREFOLDER           32806
 #define ID_INDICATOR_FRAME              59142
 #define ID_INDICATOR_COLOR              59143
 #define ID_INDICATOR_SIZE               59144
@@ -52,8 +55,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        134
-#define _APS_NEXT_COMMAND_VALUE         32805
+#define _APS_NEXT_RESOURCE_VALUE        135
+#define _APS_NEXT_COMMAND_VALUE         32807
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

@@ -144,6 +144,21 @@ END
 //
 
 IDC_MOVE                CURSOR                  "res\\cursor1.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_CAPTURE MENU 
+BEGIN
+    POPUP "&Capture"
+    BEGIN
+        MENUITEM "&Capture Region",             32805
+    END
+    MENUITEM SEPARATOR
+END
+
 #endif    // Chinese (Taiwan) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -235,6 +250,7 @@ BEGIN
     BEGIN
         MENUITEM "&Open...",                    ID_OPEN
         MENUITEM "&Properties...",              ID_FILE_PROPERTIES
+        MENUITEM "Capture &Folder",             ID_FILE_CAPTUREFOLDER
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END
@@ -431,6 +447,11 @@ STRINGTABLE
 BEGIN
     ID_VIEW_ZOOMIN          "Magnify the view"
     ID_VIEW_ZOOMOUT         "Shrink the view"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_CAPTUREFOLDER   "Set folder to save snapshot"
 END
 
 #endif    // English (U.S.) resources

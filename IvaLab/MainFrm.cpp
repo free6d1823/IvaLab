@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FRAME, OnUpdateFrame)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_COLOR, OnUpdateColor)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_SIZE, OnUpdateSize)
+	ON_COMMAND(ID_FILE_CAPTUREFOLDER, &CMainFrame::OnFileCapturefolder)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -279,5 +280,40 @@ void CMainFrame::OnUpdateSize(CCmdUI* pCmdUI)
 	string.Format ("%dx%d", m_wndView.m_sizeVideo.cx, m_wndView.m_sizeVideo.cy);
 	pCmdUI->Enable (TRUE);
 	pCmdUI->SetText (string);
+
+}
+void CMainFrame::OnFileCapturefolder()
+{
+	CString strFolder = AfxGetApp()->GetProfileString("Capture", "Folder", NULL);
+
+    LPMALLOC pMalloc; //,pMalloc2;
+    CString strDirectory;
+    BROWSEINFO bi;
+    /* Gets the Shell's default allocator */
+    char pszBuffer[MAX_PATH];
+	strcpy_s(pszBuffer, MAX_PATH, strFolder);
+    LPITEMIDLIST pidl;
+    // Get help on BROWSEINFO struct - it's got all the bit settings.
+	bi.hwndOwner = this->m_hWnd;
+    bi.pidlRoot = NULL;
+    bi.pszDisplayName = pszBuffer;
+    bi.lpszTitle = _T("Select A Directory");
+    bi.ulFlags = BIF_RETURNFSANCESTORS | BIF_RETURNONLYFSDIRS;
+    bi.lpfn = NULL;
+    bi.lParam = 0;
+    
+    if (::SHGetMalloc(&pMalloc) == NOERROR)
+    {
+        if ((pidl = ::SHBrowseForFolder(&bi)) != NULL)
+        {
+            if (::SHGetPathFromIDList(pidl, pszBuffer))
+            { 
+                //strDirectory = pszBuffer;
+				AfxGetApp()->WriteProfileString("Capture", "Folder", pszBuffer);
+            }
+            pMalloc->Free(pidl);
+        }
+        pMalloc->Release();
+    }
 
 }

@@ -68,5 +68,8 @@ protected:
 	afx_msg BOOL OnNeedText(UINT id, NMHDR * pTTTStruct, LRESULT * pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnCaptureRect();
+	afx_msg void OnUpdateCaptureRect(CCmdUI *pCmdUI);
 };
 

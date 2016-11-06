@@ -58,6 +58,7 @@ public:
 	afx_msg void OnUpdateFrame(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateColor(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateSize(CCmdUI* pCmdUI);
+	afx_msg void OnFileCapturefolder();
 };
 
 

@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CAboutDlg" Collapsed="true">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAhBAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>IvaLab.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CChildView" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>sEKhQBAEAAEESB6ABoRAEArLojCCEUogWkQJ1FgQCBA=</HashCode>
+      <FileName>ChildView.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CDib" Collapsed="true">
+    <Position X="6.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAgwAIAEBBgBIAwAIDCAgEAAAABAIECIIUwAACAIIKI=</HashCode>
+      <FileName>Dib.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Easytip" Collapsed="true">
+    <Position X="6.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABiBAAAAYCAIgABAAoBAAAAABHCBAEACQAAAAAAABAA=</HashCode>
+      <FileName>Easytip.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CImageSource" Collapsed="true">
+    <Position X="8.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAEQCAAAAIAAAKAAAAAIIAIECAAgQCAgAAgCVIAA=</HashCode>
+      <FileName>ImageSource.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ImageWnd" Collapsed="true">
+    <Position X="8.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QACDAAAEJQGACAgAEgBAACFAADAAAECASAIBEECYRAA=</HashCode>
+      <FileName>ImageWnd.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CMainApp" Collapsed="true">
+    <Position X="3" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAgBAAAAAAAAAAAQAAAABAAAAAAA=</HashCode>
+      <FileName>IvaLab.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CMainFrame" Collapsed="true">
+    <Position X="4.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACBCAGAQAEQAAAACgRAiAACgDQAggAAGACAAIIAABA=</HashCode>
+      <FileName>MainFrm.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MediaProperty" Collapsed="true">
+    <Position X="3" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAECQAAAAAIAAhBAQGABABABAAAAEAQAAAAAAAA=</HashCode>
+      <FileName>MediaProperty.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="YUV2RGB_Convertor" Collapsed="true">
+    <Position X="4.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAhAwACAAABAAAEEAEAAAAABAAAEAAEGAAAAAA=</HashCode>
+      <FileName>RGB15YUY2.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="_SupportColorFormat" Collapsed="true">
+    <Position X="0.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAIBA=</HashCode>
+      <FileName>ImageSource.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Typedef Name="SUPPORT_COLOR" Collapsed="true">
+    <Position X="0.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ImageSource.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="RYCERR" Collapsed="true">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>RGB15YUY2.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="ConvertRGBFunc" Collapsed="true">
+    <Position X="3" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>RGB15YUY2.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Enum Name="TipStatus" Collapsed="true">
+    <Position X="3" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEgAAAAAQAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Easytip.cpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="__unnamed_00bf_1" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAoQAAAAAAAAACAAAAEAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>RGB15YUY2.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Microsoft JhengHei" Size="9" />
+</ClassDiagram>

@@ -1,0 +1,19 @@
+# Object files
+*.o
+*.exe
+*.pch
+
+# VC files
+*.dep
+*.idb
+*.pdb
+*.user
+*.manifest
+*.html
+*.aps
+*.cd
+*.ncb
+
+#ignore folders
+pict
+

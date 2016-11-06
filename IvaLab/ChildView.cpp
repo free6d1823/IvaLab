@@ -7,6 +7,7 @@
 #include	"RGB15YUY2.h"
 #include <Mmsystem.h>
 #include "ImageWnd.h"
+#include "IspFunc.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -15,8 +16,8 @@
 #define SUBSAMPLE_X	2
 #define SUBSAMPLE_Y	2
 
-#define BLOCK_SIZE_X	4
-#define BLOCK_SIZE_Y	4
+#define BLOCK_SIZE_X	5
+#define BLOCK_SIZE_Y	5
 
 #define EROSE_SIZE	4
 // CMainView
@@ -30,7 +31,10 @@ CChildView::CChildView()
 	m_pDib = NULL;
 	m_hTimer = NULL;
 	m_pBuffer = NULL;
+	m_pResized = NULL;
 	m_pBackgndBuffer = NULL;
+	m_pMask = NULL;
+
     m_nHeaderSize = 0;
 
 
@@ -74,6 +78,10 @@ ON_WM_ERASEBKGND()
 	ON_UPDATE_COMMAND_UI(ID_PROCESS_EXTRACTOBJECT, &CChildView::OnUpdateProcessExtractobject)
 	ON_COMMAND(ID_PROCESS_GRAY, &CChildView::OnProcessGray)
 	ON_UPDATE_COMMAND_UI(ID_PROCESS_GRAY, &CChildView::OnUpdateProcessGray)
+	ON_COMMAND(ID_PROCESS_EDGEDETECTION, &CChildView::OnProcessEdgedetection)
+	ON_UPDATE_COMMAND_UI(ID_PROCESS_EDGEDETECTION, &CChildView::OnUpdateProcessEdgedetection)
+	ON_COMMAND(ID_PROCESS_DILATION, &CChildView::OnProcessDilation)
+	ON_UPDATE_COMMAND_UI(ID_PROCESS_DILATION, &CChildView::OnUpdateProcessDilation)
 END_MESSAGE_MAP()
 
 
@@ -210,6 +218,14 @@ void CChildView::CloseFile()
 	if(m_pBackgndBuffer){
 		delete m_pBackgndBuffer;
 		m_pBackgndBuffer = NULL;
+	}
+	if(m_pResized){
+		delete m_pResized;
+		m_pResized = NULL;
+	}
+	if(m_pMask){
+		delete m_pMask;
+		m_pMask = NULL;
 	}
 	//
 	
@@ -841,6 +857,9 @@ void CChildView::ShowYuvOnWnd(void* pYuv, int w, int h, int format)
 	}
 	int index;
 	switch(format){
+		case '444I':
+			index = 7;
+			break;
 	case '024I': 
 		index = 4;
 		break;
@@ -878,7 +897,8 @@ void CChildView::OnUpdateProcessGray(CCmdUI *pCmdUI)
 
 #define CLIP255(x) ((( (x<256)?x:255)>0)?x:0)
 
-void SubsampleY(LPBYTE pDst, LPBYTE pSrc, int cx, int cy, int dx, int dy)
+//subsample YUV422 to YUV444, therefore dx,dy must be 2-multile
+void SubsampleYuv(LPBYTE pDst, LPBYTE pSrc, int cx, int cy, int dx, int dy)
 {
 	int i,j;
 	int m,n;
@@ -886,9 +906,12 @@ void SubsampleY(LPBYTE pDst, LPBYTE pSrc, int cx, int cy, int dx, int dy)
 	LPBYTE pLineDst;
 	LPBYTE pLineSrc;
 	LPBYTE p;
+	int nW = cx/dx;
+	int nH = cy/dy;
+	//Yplan
 	for(i=0;i<cy;i+= dy){
 		pLineSrc = pSrc + i*cx;
-		pLineDst = pDst + (i/dy)*(cx/dx);
+		pLineDst = pDst + (i/dy)*nW;
 		//start of a line 
 		for(j=0; j<cx; j+= dx){
 			/////////within a block
@@ -906,35 +929,140 @@ void SubsampleY(LPBYTE pDst, LPBYTE pSrc, int cx, int cy, int dx, int dy)
 		}
 		//end of a line
 	}
+//I420_TO_444
+	//U-plan
+
+
+	pSrc += cx*cy;
+	pDst +=  nW*nH;
+	for(i=0;i<nH;i++){
+		pLineSrc = pSrc + i*cx*dy/4;
+		pLineDst = pDst + i*nW;
+		//start of a line 
+		for(j=0; j<nW; j++){
+			/////////within a block
+			blk = 0;
+			p = pLineSrc;
+			for(m=0;m<dy/2;m++){
+				for(n=0;n<dx/2; n++){
+					blk +=p[n]; 
+				}
+				p += cx/2; //next line of block
+			}
+			/////////within a block
+			*pLineDst++ = (BYTE) (blk/(m*n));
+			pLineSrc += dx/2;//nrxt point
+		}
+		//end of a line
+	}
+	//V-plan
+	pSrc += cx*cy/4;
+	pDst +=  nW*nH;
+	for(i=0;i<nH;i++){
+		pLineSrc = pSrc + i*cx*dy/4;
+		pLineDst = pDst + i*nW;
+		//start of a line 
+		for(j=0; j<nW; j++){
+			/////////within a block
+			blk = 0;
+			p = pLineSrc;
+			for(m=0;m<dy/2;m++){
+				for(n=0;n<dx/2; n++){
+					blk +=p[n]; 
+				}
+				p += cx/2; //next line of block
+			}
+			/////////within a block
+			*pLineDst++ = (BYTE) (blk/(m*n));
+			pLineSrc += dx/2;//nrxt point
+		}
+		//end of a line
+	
+	}
+//#endof I420_TO_444
+#ifdef I420_TO_I420
+	//U-plan
+	pSrc += cx*cy;
+	pDst +=  (cx/dx)*(cy/dy);
+	for(i=0;i<cy/2;i+= dy){
+		pLineSrc = pSrc + i*cx/2;
+		pLineDst = pDst + (i/dy)*(cx/dx)/2;
+		//start of a line 
+		for(j=0; j<cx/2; j+= dx){
+			/////////within a block
+			blk = 0;
+			p = pLineSrc;
+			for(m=0;m<dy;m++){
+				for(n=0;n<dx; n++){
+					blk +=p[n]; 
+				}
+				p += cx/2; //next line of block
+			}
+			/////////within a block
+			*pLineDst++ = (BYTE) (blk/(m*n));
+			pLineSrc += dx/2;
+		}
+		//end of a line
+	}
+	//V-plan
+	pSrc += cx*cy/4;
+	pDst +=  (cx/dx)*(cy/dy)/4;
+	for(i=0;i<cy/2;i+= dy){
+		pLineSrc = pSrc + i*cx/2;
+		pLineDst = pDst + (i/dy)*(cx/dx)/2;
+		//start of a line 
+		for(j=0; j<cx/2; j+= dx){
+			/////////within a block
+			blk = 0;
+			p = pLineSrc;
+			for(m=0;m<dy;m++){
+				for(n=0;n<dx; n++){
+					blk +=p[n]; 
+				}
+				p += cx/2; //next line of block
+			}
+			/////////within a block
+			*pLineDst++ = (BYTE) (blk/(m*n));
+			pLineSrc += dx/2;
+		}
+		//end of a line
+	}
+#endif //I420_TO_I420
 }
 
 void CChildView::OnProcessBackground()
 {
 	if( !m_File.IsReady())
 		return;
-	UINT len = m_File.BytesPerFrame();
-	int nCurrentFrame = m_File.GetCurrentFrame();
-	BYTE* pBufferTemp = (BYTE*) malloc(len);
+	UINT nW = m_sizeVideo.cx/SUBSAMPLE_X;
+	UINT nH = m_sizeVideo.cy/SUBSAMPLE_Y;
+	UINT len = m_File.BytesPerFrame(); //I420
+	UINT len2 = nW*nH*3; //I444
 
-	BYTE* pBaseBuffer = (BYTE*) malloc(m_sizeVideo.cx * m_sizeVideo.cy/(SUBSAMPLE_X*SUBSAMPLE_Y) );
-	BYTE* pBuffer = (BYTE*) malloc(m_sizeVideo.cx * m_sizeVideo.cy/(SUBSAMPLE_X*SUBSAMPLE_Y) );
-	m_File.Seek(44); //use 44-frame as bkgnd
+	int nCurrentFrame = m_File.GetCurrentFrame();
+	BYTE* pBufferTemp = (BYTE*) malloc(len); //original
+
+	BYTE* pBaseBuffer = (BYTE*) malloc(len2);
+	BYTE* pBuffer = (BYTE*) malloc(len2);
+	m_File.Seek(0); //use 44-frame as bkgnd
 	if(len != m_File.ReadOneFrame(pBufferTemp, (int*) &len) ){
 		free( pBuffer);	
 		return;
 	}
-	SubsampleY(pBaseBuffer, pBufferTemp, m_sizeVideo.cx, m_sizeVideo.cy, SUBSAMPLE_X, SUBSAMPLE_Y);
+
+	SubsampleYuv(pBaseBuffer, pBufferTemp, m_sizeVideo.cx, m_sizeVideo.cy, SUBSAMPLE_X, SUBSAMPLE_Y);
+
 	m_File.Seek(0);
-	for (int i=0; i< m_File.GetTotalFrames(); i++){
+	for (int k=0; k< m_File.GetTotalFrames(); k++){
 	
 		ASSERT (len == m_File.ReadOneFrame(pBufferTemp, (int*) &len) );
-		SubsampleY(pBuffer, pBufferTemp, m_sizeVideo.cx, m_sizeVideo.cy, SUBSAMPLE_X, SUBSAMPLE_Y);
+		SubsampleYuv(pBuffer, pBufferTemp, m_sizeVideo.cx, m_sizeVideo.cy, SUBSAMPLE_X, SUBSAMPLE_Y);
 
-		for(int j=0; j< m_sizeVideo.cx * m_sizeVideo.cy/(SUBSAMPLE_X*SUBSAMPLE_Y); j++){
+		for(int j=0; j< nW*nH; j++){
 			int p = (int) pBaseBuffer[j];
 			int q = (int)pBuffer[j];
 			if ( abs(p-q) < 10)
-				pBaseBuffer[j] = CLIP255((p*i +q)/(i+1));
+				pBaseBuffer[j] = CLIP255((p*k +q)/(k+1));
 			else
 				pBaseBuffer[j] = p;//CLIP255( (p*99 + q*1)/100);
 		}
@@ -942,7 +1070,7 @@ void CChildView::OnProcessBackground()
 	}
 
 	////
-	ShowYuvOnWnd(pBaseBuffer, m_sizeVideo.cx/SUBSAMPLE_X, m_sizeVideo.cy/SUBSAMPLE_Y, 'yarg');
+	ShowYuvOnWnd(pBaseBuffer, nW, nH, '444I');
 	
 	m_File.Seek(nCurrentFrame);
 	/////////////////
@@ -953,6 +1081,8 @@ void CChildView::OnProcessBackground()
 	if(m_pBackgndBuffer)
 		free(m_pBackgndBuffer);
 	m_pBackgndBuffer = pBaseBuffer;
+	m_sizeResized.cx = nW;
+	m_sizeResized.cy = nH;
 }
 
 void CChildView::OnUpdateProcessBackground(CCmdUI *pCmdUI)
@@ -962,28 +1092,92 @@ void CChildView::OnUpdateProcessBackground(CCmdUI *pCmdUI)
 
 void CChildView::OnProcessExtractobject()
 {
-	int len = m_sizeVideo.cx * m_sizeVideo.cy/(SUBSAMPLE_X*SUBSAMPLE_Y);
-	BYTE* pBuffer = (BYTE*) malloc(len);
-	BYTE* pMask = (BYTE*) malloc(len);
+	UINT nW = m_sizeVideo.cx/SUBSAMPLE_X;
+	UINT nH = m_sizeVideo.cy/SUBSAMPLE_Y;
+	int lenY =   nW*nH;
+	int lenAll = lenY*3;
+	BYTE* pBuffer = (BYTE*) malloc(lenAll);
+	BYTE* pMask = (BYTE*) malloc(lenY);
+#define DIFF(x) abs(pBuffer[x] - m_pBackgndBuffer[x])
 
-	SubsampleY(pBuffer, m_pBuffer, m_sizeVideo.cx, m_sizeVideo.cy, SUBSAMPLE_X, SUBSAMPLE_Y);
+	SubsampleYuv(pBuffer, m_pBuffer, m_sizeVideo.cx, m_sizeVideo.cy, SUBSAMPLE_X, SUBSAMPLE_Y);
+	m_sizeResized.cx = nW;
+	m_sizeResized.cy = nH;
+	if(m_pResized) free (m_pResized);
+	m_pResized = pBuffer;
 	/// Object ectraction start
-	int i;
-	for (i=0; i<len; i++){
-		pMask[i] = ( abs(pBuffer[i] - m_pBackgndBuffer[i]) < 60)?0:0xff;
-		if( abs(pBuffer[i] - m_pBackgndBuffer[i]) < 60)
-			pBuffer[i] = 0;
-	
-	}
-	/// Object ectraction end
-	ShowYuvOnWnd(pBuffer, m_sizeVideo.cx/SUBSAMPLE_X, m_sizeVideo.cy/SUBSAMPLE_Y, 'yarg');
-	ShowYuvOnWnd(pMask, m_sizeVideo.cx/SUBSAMPLE_X, m_sizeVideo.cy/SUBSAMPLE_Y, 'yarg');
+	int i,j,y, u,v;
+	y = 0;
+	u = lenY;
+	v = nW*nH + lenY;
+	for (i=0; i<nH; i++){
+		for(j=0;j<nW; j++){
+			if( DIFF(y) < 50 && DIFF(u) <30 && DIFF(v) < 30){//bkgnd
+				pMask[y] = 0x0; 
 
-	free (pBuffer);
-	free(pMask);
+			}else{
+
+				pMask[y] = 0xff; 
+	
+			}
+			y++;u++;v++;
+		}
+	}
+	if(m_pMask) free(m_pMask);
+	m_pMask = pMask;
+	/// Object ectraction end
+	ShowYuvOnWnd(m_pResized, m_sizeResized.cx, m_sizeResized.cy, '444I');
+	ShowYuvOnWnd(m_pMask, m_sizeResized.cx, m_sizeResized.cy, 'yarg');
+
+ 
 }
 
 void CChildView::OnUpdateProcessExtractobject(CCmdUI *pCmdUI)
 {
 	pCmdUI->Enable(m_pBackgndBuffer != NULL);
 }
+void CChildView::OnUpdateProcessDilation(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable(m_pMask != NULL);
+}
+
+void CChildView::OnProcessDilation()
+{
+	BYTE* pDilation = (BYTE*) malloc(m_sizeResized.cx*m_sizeResized.cy);
+	/// Object ectraction end
+	ImgInfor info;
+	info.pSrc = m_pMask;
+	info.pOut = pDilation;
+	info.width = m_sizeResized.cx;
+	info.height =  m_sizeResized.cy;
+	info.stride = m_sizeResized.cx;
+	ispDilation(&info, 3);
+	ShowYuvOnWnd(pDilation, m_sizeResized.cx, m_sizeResized.cy, 'yarg');
+
+	free (m_pMask);
+	m_pMask = pDilation;
+}
+
+
+void CChildView::OnProcessEdgedetection()
+{
+	UINT len = m_sizeResized.cx * m_sizeResized.cy;
+	BYTE* pBuffer = (BYTE*) malloc(len);
+	ImgInfor info;
+	info.pSrc = m_pResized;
+	info.pOut = pBuffer;
+	info.width = m_sizeResized.cx;
+	info.height = m_sizeResized.cy;
+	info.stride = m_sizeResized.cx;
+	ispEdgeDetection(&info, m_pMask, 50); 
+	/// Object ectraction end
+	ShowYuvOnWnd(pBuffer, m_sizeResized.cx, m_sizeResized.cy, 'yarg');
+	free (pBuffer);
+}
+
+
+void CChildView::OnUpdateProcessEdgedetection(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable(m_pMask != NULL && m_pResized != NULL);
+}
+

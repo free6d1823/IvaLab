@@ -286,18 +286,18 @@ void ImageWnd::SetFrames(LPBYTE pRef, LPBYTE pTar, int nLength)
     m_pTarget = pTar;
     Calculate();
 }
-
-int ImageWnd::GetDiff(int x, int y)
+//return RGB at point (x,y)
+DWORD ImageWnd::GetColor(DWORD x, DWORD y)
 {
-    if(!m_pTarget || !m_pRef)
+    if(!m_pDib)
         return 0;
-    if(x>=m_sizeRange.cx || y >= m_sizeRange.cy)
+	if(x>=m_pDib->Width() || y >= m_pDib->Height())
         return 0;
-    int nLength = (x +  y*m_sizeRange.cx)*m_nPixelStep
-        + m_nOffset;
-    int nDiff = *(m_pTarget+ nLength) - * (m_pRef+ nLength);
-    TRACE("(%d,%d) diff=%d\n",x,y,nDiff);
-    return nDiff;
+	BYTE* p1 = (BYTE*)m_pDib->GetBits();
+	BYTE* p = (BYTE*)m_pDib->GetBits() + x*m_pDib->GetBitsPerPixel()/8 + (m_pDib->Height()-y-1)* m_pDib->BytesPerLine();
+	DWORD color = 0;
+	color = p[0] | (p[1]<<8) | (p[2]<<16);//0xrrggbb
+    return color;
 }
 
 void ImageWnd::Calculate()
@@ -384,8 +384,9 @@ BOOL ImageWnd::OnNeedText(UINT id, NMHDR * pTTTStruct, LRESULT * pResult)
         CRect rc;
         GetClientRect(&rc);
         if(rc.PtInRect(pt))
-        {            
-            wsprintf(pTTT->lpszText, "(%d,%d) Diff= %d", pt.x, pt.y, GetDiff(pt.x, pt.y));
+        {   
+			DWORD color = GetColor(pt.x, pt.y);
+            wsprintf(pTTT->lpszText, "(%d,%d)=[%d,%d,%d]", pt.x, pt.y, (color>>16)&0xff, (color >>8 )&0xff, color&0xff);
             pTTT->hinst = NULL;
 			* pResult = 1;
         }

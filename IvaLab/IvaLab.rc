@@ -263,6 +263,8 @@ BEGIN
         MENUITEM "Find &Background",            ID_PROCESS_BACKGROUND
         MENUITEM "Extract &Object",             32800
         MENUITEM "&Gray level",                 32802
+        MENUITEM "&Edge Detection",             ID_PROCESS_EDGEDETECTION
+        MENUITEM "&Dilation",                   ID_PROCESS_DILATION
     END
     POPUP "&View"
     BEGIN

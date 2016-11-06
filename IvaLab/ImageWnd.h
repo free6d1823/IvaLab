@@ -41,7 +41,8 @@ private:
 // Implementation
 public:
 	void SetImage(CDib* pDib);
-	int GetDiff(int x, int y);
+	DWORD GetColor(DWORD x, DWORD y);
+
 	void ResizeWindow();
 	void SelectChannel(int nChannel);
 	void SetFrames(LPBYTE pRef, LPBYTE pTar, int nLength);

@@ -210,6 +210,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\IspFunc.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\IvaLab.cpp"
 				>
 			</File>
@@ -272,6 +276,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\IspFunc.h"
+				>
+			</File>
+			<File
 				RelativePath=".\IvaLab.h"
 				>
 			</File>
@@ -330,6 +338,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>

@@ -31,6 +31,7 @@ public:
 	int GetCurrentFrameIndex(){return m_File.GetCurrentFrame();}
 	CString	m_szFilename;
 	SIZE	m_sizeVideo;
+	SIZE	m_sizeResized;
 	int		m_nFrameRate;
 	DWORD	m_dwFourCC;
     int     m_nHeaderSize;
@@ -50,6 +51,8 @@ private:
 	CImageSource	m_File;
 	LPBYTE	m_pBuffer; //current image buffer
 	LPBYTE	m_pBackgndBuffer; //background buffer
+	LPBYTE  m_pResized; //resized buffer
+	LPBYTE  m_pMask; //ROI buffer, 8-bit/pixel
 	UINT	m_hTimer;
 	int		m_nState; //0=stop, 1=play
 	int		m_nStepFrames;
@@ -115,5 +118,9 @@ public:
 	afx_msg void OnUpdateProcessExtractobject(CCmdUI *pCmdUI);
 	afx_msg void OnProcessGray();
 	afx_msg void OnUpdateProcessGray(CCmdUI *pCmdUI);
+	afx_msg void OnProcessEdgedetection();
+	afx_msg void OnUpdateProcessEdgedetection(CCmdUI *pCmdUI);
+	afx_msg void OnProcessDilation();
+	afx_msg void OnUpdateProcessDilation(CCmdUI *pCmdUI);
 };
 
